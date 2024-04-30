@@ -1,5 +1,8 @@
 <template>
-    <v-container>
-        <h1>Contatti</h1>
-    </v-container>
-</template>
+    <div>
+      <h1>Preferiti</h1>
+  
+    </div>
+  </template>
+  
+  

@@ -32,7 +32,9 @@ export default {
   data() {
     return {
       radios: [],
-      favorites: JSON.parse(localStorage.getItem('favorites') || '{}'), // Carica i preferiti dal localStorage
+      favorites: JSON.parse(localStorage.getItem('favorites') || '{}'),
+      currentPlayingRadio: null,
+      audio: new Audio(),
     }
   },
   methods: {
@@ -45,30 +47,44 @@ export default {
           return response.json();
         })
         .then(data => {
-          this.radios = data; // Imposta la lista delle stazioni radio
+          this.radios = data;
         })
         .catch(error => {
           console.error('Si è verificato un errore durante il recupero dei dati:', error);
         });
     },
     playRadio(radio) {
-      console.log('Avvia la riproduzione della stazione radio:', radio);
+      if (!this.audio) {
+        console.error('L\'oggetto audio non è stato inizializzato correttamente.');
+        return;
+      }
+      if (this.currentPlayingRadio && this.currentPlayingRadio !== radio) {
+        this.currentPlayingRadio.isPlaying = false;
+        this.audio.pause();
+      }
+      this.audio.src = radio.url; // Assumi che 'url' sia la chiave corretta per l'URL della radio
+      this.audio.play();
+      this.currentPlayingRadio = radio;
     },
     stopRadio(radio) {
       console.log('Ferma la riproduzione della stazione radio:', radio);
+      this.currentPlayingRadio = null;
+      if (this.audio && !this.audio.paused) {
+        this.audio.pause();
+      }
     },
     toggleFavorite(radio) {
-      const favoriteKey = radio.name; // Utilizza il nome della stazione radio come chiave nei preferiti
+      const favoriteKey = radio.name;
       if (this.favorites[favoriteKey]) {
-        delete this.favorites[favoriteKey]; // Rimuovi la stazione radio dai preferiti
+        delete this.favorites[favoriteKey];
       } else {
-        this.favorites[favoriteKey] = true; // Aggiungi la stazione radio ai preferiti
+        this.favorites[favoriteKey] = true;
       }
-      localStorage.setItem('favorites', JSON.stringify(this.favorites)); // Salva i preferiti nel localStorage
+      localStorage.setItem('favorites', JSON.stringify(this.favorites));
     },
     isFavorite(radio) {
-      const favoriteKey = radio.name; // Utilizza il nome della stazione radio come chiave nei preferiti
-      return this.favorites[favoriteKey] || false; // Controlla se la stazione radio è nei preferiti
+      const favoriteKey = radio.name;
+      return this.favorites[favoriteKey] || false;
     },
   },
   created() {
@@ -83,8 +99,8 @@ export default {
   top: 10px;
   right: 10px;
   cursor: pointer;
-  width: 24px; /* Imposta la larghezza dell'icona */
-  height: 24px; /* Imposta l'altezza dell'icona */
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;

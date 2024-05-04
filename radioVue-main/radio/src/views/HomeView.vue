@@ -11,14 +11,16 @@
           </div>
           <v-card-title>{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
-            <v-btn @click="playRadio(radio)" color="primary" class="ma-2">
-              <v-icon class="mr-2">mdi-play</v-icon>
-              Play
-            </v-btn>
-            <v-btn @click="stopRadio(radio)" color="error" class="ma-2">
-              <v-icon class="mr-2">mdi-stop</v-icon>
-              Stop
-            </v-btn>
+            <!-- Rimuovi il pulsante "Play" -->
+            <div v-if="!isPlaying(radio)">
+              <v-btn @click="playRadio(radio)" color="primary" class="ma-2">
+                <v-icon class="mr-2">mdi-play</v-icon>
+              </v-btn>
+            </div>
+            <!-- Aggiungi la GIF delle onde sonore -->
+            <div v-else class="sound-wave">
+              <img src="@/assets/download.gif" alt="Sound Wave GIF" />
+            </div>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -27,6 +29,8 @@
 </template>
 
 <script>
+import Hls from 'hls.js'; // Importa HLS.js
+
 export default {
   name: 'HomeView',
   data() {
@@ -35,6 +39,7 @@ export default {
       favorites: JSON.parse(localStorage.getItem('favorites') || '{}'),
       currentPlayingRadio: null,
       audio: new Audio(),
+      isAudioReady: false,
     }
   },
   methods: {
@@ -47,7 +52,10 @@ export default {
           return response.json();
         })
         .then(data => {
-          this.radios = data;
+          this.radios = data.map(radio => ({
+            ...radio,
+            gifUrl: '@/assets/download.gif', // Aggiungi il percorso della tua GIF per ogni radio
+          }));
         })
         .catch(error => {
           console.error('Si è verificato un errore durante il recupero dei dati:', error);
@@ -60,18 +68,65 @@ export default {
       }
       if (this.currentPlayingRadio && this.currentPlayingRadio !== radio) {
         this.currentPlayingRadio.isPlaying = false;
+        if (this.audio.hls) {
+          this.audio.hls.destroy();
+        }
         this.audio.pause();
       }
-      this.audio.src = radio.url; // Assumi che 'url' sia la chiave corretta per l'URL della radio
-      this.audio.play();
+      if (radio.url.endsWith('.m3u8')) {
+        if (Hls.isSupported()) {
+          this.audio.hls = new Hls();
+          this.audio.hls.loadSource(radio.url);
+          this.audio.hls.attachMedia(this.audio);
+          this.audio.addEventListener('canplaythrough', () => {
+            this.audio.play();
+            // Avvia la GIF delle onde sonore
+            this.startSoundWaveGif(radio);
+          }, false);
+        } else if (this.audio.canPlayType('application/x-mpegURL')) {
+          this.audio.src = radio.url;
+          this.audio.addEventListener('canplaythrough', () => {
+            this.audio.play();
+            // Avvia la GIF delle onde sonore
+            this.startSoundWaveGif(radio);
+          }, false);
+        } else {
+          console.error('Il browser non supporta la riproduzione di file m3u8.');
+        }
+      } else {
+        this.audio.src = radio.url;
+        this.audio.addEventListener('canplaythrough', () => {
+          this.audio.play();
+          // Avvia la GIF delle onde sonore
+          this.startSoundWaveGif(radio);
+        }, false);
+      }
       this.currentPlayingRadio = radio;
     },
-    stopRadio(radio) {
-      console.log('Ferma la riproduzione della stazione radio:', radio);
-      this.currentPlayingRadio = null;
-      if (this.audio && !this.audio.paused) {
-        this.audio.pause();
+    stopRadio() {
+      if (this.currentPlayingRadio) {
+        console.log('Ferma la riproduzione della stazione radio:', this.currentPlayingRadio);
+        this.currentPlayingRadio = null;
+        if (this.audio && !this.audio.paused) {
+          this.audio.pause();
+        }
+        // Interrompi la GIF delle onde sonore
+        this.stopSoundWaveGif();
       }
+    },
+    startSoundWaveGif(radio) {
+      // Trova l'elemento img della GIF corrispondente alla radio e avvialo
+      const gifImg = document.querySelector(`img[src="${radio.gifUrl}"]`);
+      if (gifImg) {
+        gifImg.style.display = 'block';
+      }
+    },
+    stopSoundWaveGif() {
+      // Interrompi tutte le GIF delle onde sonore
+      const allGifImgs = document.querySelectorAll('.sound-wave img');
+      allGifImgs.forEach(img => {
+        img.style.display = 'none';
+      });
     },
     toggleFavorite(radio) {
       const favoriteKey = radio.name;
@@ -85,6 +140,9 @@ export default {
     isFavorite(radio) {
       const favoriteKey = radio.name;
       return this.favorites[favoriteKey] || false;
+    },
+    isPlaying(radio) {
+      return this.currentPlayingRadio === radio && !this.audio.paused;
     },
   },
   created() {

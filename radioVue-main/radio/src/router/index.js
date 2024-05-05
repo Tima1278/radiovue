@@ -9,13 +9,18 @@ const routes = [
   },
 
   {
-    path: '/contatti',
-    name: 'contatti',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/ContattiView.vue')
-  }
+    path: '/preferiti',
+    name: 'contattpreferiti',
+    component: () => import(/* webpackChunkName: "about" */ '../views/preferiti.vue')
+    
+  },
+  {
+    path: '/posizione_radio',
+    name: 'Posizione Radio',
+    component: () => import(/* webpackChunkName: "about" */ '../views/posizione_radio.vue')
+    
+  },
+  
 ]
 
 const router = createRouter({

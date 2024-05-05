@@ -1,26 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import PosizioneRadio from '../views/PosizioneRadio.vue'
+import FavoriteRadio from '../views/FavoriteRadio.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
-  },
-
-  {
-    path: '/favorite',
-    name: 'contattpreferiti',
-    component: () => import(/* webpackChunkName: "about" */ '../views/FavoriteRadio.vue')
-    
   },
   {
     path: '/posizione_radio',
-    name: 'Posizione Radio',
-    component: () => import(/* webpackChunkName: "about" */ '../views/PosizioneRadio.vue')
-    
+    name: 'PosizioneRadio',
+    component: PosizioneRadio
   },
-  
+  {
+    path: '/favorite',
+    name: 'FavoriteRadio',
+    component: FavoriteRadio
+  }
 ]
 
 const router = createRouter({

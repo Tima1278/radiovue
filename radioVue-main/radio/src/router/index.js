@@ -9,15 +9,15 @@ const routes = [
   },
 
   {
-    path: '/preferiti',
+    path: '/favorite',
     name: 'contattpreferiti',
-    component: () => import(/* webpackChunkName: "about" */ '../views/preferiti.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/FavoriteRadio.vue')
     
   },
   {
     path: '/posizione_radio',
     name: 'Posizione Radio',
-    component: () => import(/* webpackChunkName: "about" */ '../views/posizione_radio.vue')
+    component: () => import(/* webpackChunkName: "about" */ '../views/PosizioneRadio.vue')
     
   },
   

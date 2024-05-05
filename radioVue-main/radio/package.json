@@ -9,9 +9,13 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "hls.js": "^1.5.8",
+    "three": "^0.164.1",
+    "three-orbitcontrols": "^2.110.3",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuetify": "^3.5.17"
+    "vuetify": "^3.5.17",
+    "wavesurfer.js": "^7.7.13"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

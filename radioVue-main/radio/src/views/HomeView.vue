@@ -4,22 +4,28 @@
     <v-row>
       <v-col v-for="radio in radios" :key="radio.name" cols="12" sm="6" md="4" lg="3">
         <v-card>
-          <v-img :src="radio.favicon" height="200"></v-img>
+          <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.jpg')" height="200"></v-img>
           <div @click="toggleFavorite(radio)" class="favorite-icon">
             <v-icon v-if="!isFavorite(radio)" color="black">mdi-heart-outline</v-icon>
             <v-icon v-else color="red">mdi-heart</v-icon>
           </div>
           <v-card-title>{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
-            <!-- Rimuovi il pulsante "Play" -->
-            <div v-if="!isPlaying(radio)">
-              <v-btn @click="playRadio(radio)" color="primary" class="ma-2">
-                <v-icon class="mr-2">mdi-play</v-icon>
-              </v-btn>
-            </div>
-            <!-- Aggiungi la GIF delle onde sonore -->
+            <!-- Tasto di riproduzione della radio -->
+            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="primary" class="ma-2">
+              <v-icon>mdi-play</v-icon>
+            </v-btn>
+            <!-- Onde sonore -->
             <div v-else class="sound-wave">
-              <img src="@/assets/download.gif" alt="Sound Wave GIF" />
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
+              <div class="bar"></div>
             </div>
           </v-card-actions>
         </v-card>
@@ -54,7 +60,7 @@ export default {
         .then(data => {
           this.radios = data.map(radio => ({
             ...radio,
-            gifUrl: '@/assets/download.gif', // Aggiungi il percorso della tua GIF per ogni radio
+            gifUrl: '', // Rimuovi il riferimento alla GIF
           }));
         })
         .catch(error => {
@@ -80,15 +86,13 @@ export default {
           this.audio.hls.attachMedia(this.audio);
           this.audio.addEventListener('canplaythrough', () => {
             this.audio.play();
-            // Avvia la GIF delle onde sonore
-            this.startSoundWaveGif(radio);
+            this.currentPlayingRadio = radio;
           }, false);
         } else if (this.audio.canPlayType('application/x-mpegURL')) {
           this.audio.src = radio.url;
           this.audio.addEventListener('canplaythrough', () => {
             this.audio.play();
-            // Avvia la GIF delle onde sonore
-            this.startSoundWaveGif(radio);
+            this.currentPlayingRadio = radio;
           }, false);
         } else {
           console.error('Il browser non supporta la riproduzione di file m3u8.');
@@ -97,36 +101,9 @@ export default {
         this.audio.src = radio.url;
         this.audio.addEventListener('canplaythrough', () => {
           this.audio.play();
-          // Avvia la GIF delle onde sonore
-          this.startSoundWaveGif(radio);
+          this.currentPlayingRadio = radio;
         }, false);
       }
-      this.currentPlayingRadio = radio;
-    },
-    stopRadio() {
-      if (this.currentPlayingRadio) {
-        console.log('Ferma la riproduzione della stazione radio:', this.currentPlayingRadio);
-        this.currentPlayingRadio = null;
-        if (this.audio && !this.audio.paused) {
-          this.audio.pause();
-        }
-        // Interrompi la GIF delle onde sonore
-        this.stopSoundWaveGif();
-      }
-    },
-    startSoundWaveGif(radio) {
-      // Trova l'elemento img della GIF corrispondente alla radio e avvialo
-      const gifImg = document.querySelector(`img[src="${radio.gifUrl}"]`);
-      if (gifImg) {
-        gifImg.style.display = 'block';
-      }
-    },
-    stopSoundWaveGif() {
-      // Interrompi tutte le GIF delle onde sonore
-      const allGifImgs = document.querySelectorAll('.sound-wave img');
-      allGifImgs.forEach(img => {
-        img.style.display = 'none';
-      });
     },
     toggleFavorite(radio) {
       const favoriteKey = radio.name;
@@ -142,7 +119,7 @@ export default {
       return this.favorites[favoriteKey] || false;
     },
     isPlaying(radio) {
-      return this.currentPlayingRadio === radio && !this.audio.paused;
+      return this.currentPlayingRadio === radio;
     },
   },
   created() {
@@ -162,5 +139,77 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sound-wave {
+  width: 150px;
+  height: 40px;
+  background-color: #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 5px;
+  border-radius: 20px;
+}
+
+.bar {
+  width: 6px;
+  background-color: #333;
+  border-radius: 2px;
+  animation: soundWaveAnimation 1s infinite alternate;
+}
+
+.bar:nth-child(2) {
+  height: 60%;
+  animation-delay: 0.1s;
+}
+
+.bar:nth-child(3) {
+  height: 40%;
+  animation-delay: 0.2s;
+}
+
+.bar:nth-child(4) {
+  height: 70%;
+  animation-delay: 0.3s;
+}
+
+.bar:nth-child(5) {
+  height: 50%;
+  animation-delay: 0.4s;
+}
+
+.bar:nth-child(6) {
+  height: 80%;
+  animation-delay: 0.5s;
+}
+
+.bar:nth-child(7) {
+  height: 55%;
+  animation-delay: 0.6s;
+}
+
+.bar:nth-child(8) {
+  height: 75%;
+  animation-delay: 0.7s;
+}
+
+.bar:nth-child(9) {
+  height: 45%;
+  animation-delay: 0.8s;
+}
+
+.bar:nth-child(10) {
+  height: 65%;
+  animation-delay: 0.9s;
+}
+
+@keyframes soundWaveAnimation {
+  0% {
+    height: 20%;
+  }
+  100% {
+    height: 100%;
+  }
 }
 </style>

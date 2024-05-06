@@ -1,3 +1,4 @@
+<!-- RadioView.vue -->
 <template>
   <v-container>
     <h1>Radio</h1>
@@ -31,14 +32,21 @@
         </v-card>
       </v-col>
     </v-row>
+    
+    <!-- Aggiunta del componente ThreeDModel.vue -->
+    <three-d-model></three-d-model>
   </v-container>
 </template>
 
 <script>
 import Hls from 'hls.js'; // Importa HLS.js
+import ThreeDModel from '@/components/ThreeDModel.vue'; // Importa il componente ThreeDModel.vue
 
 export default {
-  name: 'HomeView',
+  name: 'RadioView',
+  components: {
+    ThreeDModel // Dichiarazione del componente ThreeDModel.vue
+  },
   data() {
     return {
       radios: [],

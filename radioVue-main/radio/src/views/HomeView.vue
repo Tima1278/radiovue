@@ -1,23 +1,34 @@
-<!-- RadioView.vue -->
 <template>
-  <v-container>
-    <h1>Radio</h1>
+  <v-container class="container-background">
+    <h1 class="text-center">Radio</h1>
     <v-row>
-      <v-col v-for="radio in radios" :key="radio.name" cols="12" sm="6" md="4" lg="3">
-        <v-card>
-          <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.jpg')" height="200"></v-img>
-          <div @click="toggleFavorite(radio)" class="favorite-icon">
-            <v-icon v-if="!isFavorite(radio)" color="black">mdi-heart-outline</v-icon>
-            <v-icon v-else color="red">mdi-heart</v-icon>
-          </div>
-          <v-card-title>{{ radio.name }}</v-card-title>
+      <!-- Utilizzo v-for per creare righe con due card ciascuna -->
+      <v-col v-for="(radio, index) in radios" :key="index" cols="12" sm="6" md="6" lg="6">
+        <v-card class="radio-card" :class="{ 'punk-card': index % 2 === 0, 'punk-card2': index % 2 !== 0 }">
+          <v-row>
+            <!-- Foto della radio -->
+            <v-col cols="6" v-if="!isPlaying(radio)">
+              <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.jpg')" height="200"></v-img>
+            </v-col>
+
+            <!-- Creazione del mondo sopra il titolo della radio e il pulsante di riproduzione -->
+            <three-d-model v-if="isPlaying(radio)" :radio="radio"></three-d-model>
+
+            <!-- Colonna per la foto della radio (solo quando non è in riproduzione) -->
+            <v-col cols="6" v-if="isPlaying(radio)">
+              <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.jpg')" height="200"></v-img>
+            </v-col>
+            <!-- Colonna per il mondo (solo quando è in riproduzione) -->
+            <v-col cols="6" v-if="isPlaying(radio)">
+              <v-img src="../assets/world.jpg" height="200"></v-img>
+            </v-col>
+          </v-row>
+
+          <!-- Titolo della radio e pulsante di riproduzione -->
+          <v-card-title class="text-center">{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
-            <!-- Tasto di riproduzione della radio -->
-            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="primary" class="ma-2">
-              <v-icon>mdi-play</v-icon>
-            </v-btn>
             <!-- Onde sonore -->
-            <div v-else class="sound-wave">
+            <div v-if="isPlaying(radio)" class="sound-wave">
               <div class="bar"></div>
               <div class="bar"></div>
               <div class="bar"></div>
@@ -28,24 +39,30 @@
               <div class="bar"></div>
               <div class="bar"></div>
             </div>
+
+            <div @click="toggleFavorite(radio)" class="favorite-icon">
+              <v-icon v-if="!isFavorite(radio)" color="black">mdi-heart-outline</v-icon>
+              <v-icon v-else color="red">mdi-heart</v-icon>
+            </div>
+            <!-- Tasto di riproduzione della radio -->
+            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="primary" class="ma-2">
+              <v-icon>mdi-play</v-icon>
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-    
-    <!-- Aggiunta del componente ThreeDModel.vue -->
-    <three-d-model></three-d-model>
   </v-container>
 </template>
 
 <script>
-import Hls from 'hls.js'; // Importa HLS.js
-import ThreeDModel from '@/components/ThreeDModel.vue'; // Importa il componente ThreeDModel.vue
+import Hls from 'hls.js';
+import ThreeDModel from '@/components/ThreeDModel.vue';
 
 export default {
   name: 'RadioView',
   components: {
-    ThreeDModel // Dichiarazione del componente ThreeDModel.vue
+    ThreeDModel
   },
   data() {
     return {
@@ -81,7 +98,12 @@ export default {
         return;
       }
       if (this.currentPlayingRadio && this.currentPlayingRadio !== radio) {
-        this.currentPlayingRadio.isPlaying = false;
+        // Disattiva il modello 3D se è attivo
+        if (this.currentPlayingRadio.isPlaying) {
+          this.currentPlayingRadio.isPlaying = false;
+        }
+        // Rimuovi il riferimento al modello 3D corrente
+        this.currentPlayingRadio = null;
         if (this.audio.hls) {
           this.audio.hls.destroy();
         }
@@ -137,6 +159,25 @@ export default {
 </script>
 
 <style scoped>
+.container-background {
+  background-color: #000;
+}
+
+.radio-card {
+  margin-bottom: 20px;
+  position: relative;
+  border: 2px solid #1976D2; /* Colore blu per il bordo */
+  border-radius: 10px; /* Arrotonda i bordi */
+}
+
+.punk-card {
+  background: linear-gradient(45deg, #8a2be2, #ff69b4); /* Viola e Rosa */
+}
+
+.punk-card2 {
+  background: linear-gradient(45deg, #ff69b4, #8a2be2); /* Rosa e Viola */
+}
+
 .favorite-icon {
   position: absolute;
   top: 10px;

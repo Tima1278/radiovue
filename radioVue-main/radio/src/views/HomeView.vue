@@ -5,9 +5,12 @@
       <!-- Utilizzo v-for per creare righe con tre card ciascuna -->
       <v-col v-for="(radio, index) in radios" :key="index" cols="12" sm="4" md="4" lg="4">
         <v-card class="radio-card punk-card">
-          <!-- Icona del cuore in alto a destra -->
-          <div class="favorite-icon">
-            <v-icon @click="toggleFavorite(radio)" color="red">{{ isFavorite(radio) ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+          <!-- Aggiunta del container per il pulsante -->
+          <div class="btn-container">
+            <!-- Cuore per aggiungere ai preferiti -->
+            <v-btn @click="toggleFavorite(radio)" class="ma-2" color="transparent">
+              <v-icon :color="radio.isFavorite ? 'red' : 'white'" size="24">mdi-heart</v-icon>
+            </v-btn>
           </div>
 
           <!-- Foto della radio -->
@@ -20,9 +23,9 @@
           <!-- Titolo della radio -->
           <v-card-title class="text-center radio-title">{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
-            <!-- Tasto di riproduzione della radio -->
-            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="transparent" class="ma-2">
-              <v-icon color="green" size="48">mdi-play</v-icon>
+            <!-- Icona dell'altoparlante per la riproduzione della radio -->
+            <v-btn @click="playRadio(radio)" color="transparent" class="ma-2">
+              <v-icon color="green" size="48">mdi-volume-high</v-icon>
             </v-btn>
             <!-- GIF di caricamento -->
             <img v-if="isPlaying(radio)" src="@/assets/soundwave.gif" class="loading-gif" alt="Caricamento GIF">
@@ -41,7 +44,6 @@ export default {
   data() {
     return {
       radios: [],
-      favorites: JSON.parse(localStorage.getItem('favorites') || '{}'),
       currentPlayingRadio: null,
       audio: new Audio(),
       isAudioReady: false,
@@ -59,6 +61,7 @@ export default {
         .then(data => {
           this.radios = data.map(radio => ({
             ...radio,
+            isFavorite: false // Inizializza la proprietà isFavorite a false per ogni radio
           }));
         })
         .catch(error => {
@@ -102,22 +105,12 @@ export default {
         }, false);
       }
     },
-    toggleFavorite(radio) {
-      const favoriteKey = radio.name;
-      if (this.favorites[favoriteKey]) {
-        delete this.favorites[favoriteKey];
-      } else {
-        this.favorites[favoriteKey] = true;
-      }
-      localStorage.setItem('favorites', JSON.stringify(this.favorites));
-    },
-    isFavorite(radio) {
-      const favoriteKey = radio.name;
-      return this.favorites[favoriteKey] || false;
-    },
     isPlaying(radio) {
       return this.currentPlayingRadio === radio;
     },
+    toggleFavorite(radio) {
+      radio.isFavorite = !radio.isFavorite;
+    }
   },
   created() {
     this.getRadios();
@@ -126,7 +119,7 @@ export default {
 </script>
 
 <style scoped>
-/* Aggiornamento dello stile per rendere le card quadrate */
+/* Stili personalizzati */
 .radio-card {
   margin-bottom: 20px;
   position: relative;
@@ -138,20 +131,12 @@ export default {
   height: 320px; /* Altezza fissa per rendere le card quadrate */
 }
 
-.favorite-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-}
-
-.punk-card {
-  background: linear-gradient(45deg, #ff69b4, #8a2be2); /* Viola e Rosa */
-}
-
 .loading-gif {
   width: 170px; /* Imposta la larghezza della GIF */
   height: auto; /* Imposta l'altezza automaticamente */
+}
+.punk-card {
+  background: linear-gradient(45deg, #ff69b4, #8a2be2); /* Viola e Rosa */
 }
 
 .radio-title {
@@ -159,5 +144,12 @@ export default {
   font-weight: bold; /* Imposta il grassetto */
   color: #333; /* Cambia il colore del testo */
   text-transform: uppercase; /* Trasforma il testo in maiuscolo */
+}
+
+.btn-container {
+  position: absolute;
+  top: 5px; /* Aggiunge spazio in alto */
+  right: 5px; /* Aggiunge spazio a destra */
+  z-index: 1; /* Imposta l'indice z */
 }
 </style>

@@ -12,17 +12,17 @@
 
           <!-- Foto della radio -->
           <v-row justify="center">
-            <v-col cols="10">
-              <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.jpg')" height="150"></v-img>
+            <v-col cols="12" class="text-center">
+              <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.png')" height="200" contain></v-img>
             </v-col>
           </v-row>
 
-          <!-- Titolo della radio e pulsante di riproduzione -->
-          <v-card-title class="text-center">{{ radio.name }}</v-card-title>
+          <!-- Titolo della radio -->
+          <v-card-title class="text-center radio-title">{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
             <!-- Tasto di riproduzione della radio -->
-            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="primary" class="ma-2">
-              <v-icon>mdi-play</v-icon>
+            <v-btn v-if="!isPlaying(radio)" @click="playRadio(radio)" color="transparent" class="ma-2">
+              <v-icon color="green" size="48">mdi-play</v-icon>
             </v-btn>
             <!-- GIF di caricamento -->
             <img v-if="isPlaying(radio)" src="@/assets/soundwave.gif" class="loading-gif" alt="Caricamento GIF">
@@ -135,7 +135,7 @@ export default {
   display: flex;
   flex-direction: column; /* Allineamento verticale dei contenuti */
   justify-content: space-between; /* Spazio tra i contenuti */
-  height: 300px; /* Altezza fissa per rendere le card quadrate */
+  height: 320px; /* Altezza fissa per rendere le card quadrate */
 }
 
 .favorite-icon {
@@ -146,11 +146,18 @@ export default {
 }
 
 .punk-card {
-  background: linear-gradient(45deg, #8a2be2, #ff69b4); /* Viola e Rosa */
+  background: linear-gradient(45deg, #ff69b4, #8a2be2); /* Viola e Rosa */
 }
 
 .loading-gif {
-  width: 100px; /* Imposta la larghezza della GIF */
+  width: 170px; /* Imposta la larghezza della GIF */
   height: auto; /* Imposta l'altezza automaticamente */
+}
+
+.radio-title {
+  font-size: 24px; /* Imposta la dimensione del carattere */
+  font-weight: bold; /* Imposta il grassetto */
+  color: #333; /* Cambia il colore del testo */
+  text-transform: uppercase; /* Trasforma il testo in maiuscolo */
 }
 </style>

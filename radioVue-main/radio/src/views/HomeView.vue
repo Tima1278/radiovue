@@ -23,9 +23,10 @@
           <!-- Titolo della radio -->
           <v-card-title class="text-center radio-title">{{ radio.name }}</v-card-title>
           <v-card-actions class="d-flex justify-center">
-            <!-- Icona dell'altoparlante per la riproduzione della radio -->
+            <!-- Icona per riprodurre o mettere in pausa la radio -->
             <v-btn @click="playRadio(radio)" color="transparent" class="ma-2">
-              <v-icon color="green" size="48">mdi-volume-high</v-icon>
+              <!-- Usa la condizione per visualizzare l'icona di play o pausa -->
+              <font-awesome-icon :icon="radio.isPlaying ? 'pause' : 'play'" />
             </v-btn>
             <!-- GIF di caricamento -->
             <img v-if="isPlaying(radio)" src="@/assets/soundwave.gif" class="loading-gif" alt="Caricamento GIF">
@@ -37,6 +38,9 @@
 </template>
 
 <script>
+// Importa Font Awesome
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
 import Hls from 'hls.js';
 
 export default {
@@ -115,6 +119,13 @@ export default {
   created() {
     this.getRadios();
   },
+  components: {
+    FontAwesomeIcon
+  },
+  mounted() {
+    // Aggiungi icone al core di Font Awesome
+    library.add(faPlay, faPause);
+  }
 }
 </script>
 

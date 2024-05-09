@@ -5,33 +5,38 @@
       <!-- Utilizzo v-for per creare righe con tre card ciascuna -->
       <v-col v-for="(radio, index) in radios" :key="index" cols="12" sm="4" md="4" lg="4">
         <v-card class="radio-card punk-card">
-          <!-- Aggiunta del container per il pulsante -->
-          <div class="btn-container">
-            <!-- Cuore per aggiungere ai preferiti -->
-            <v-btn @click="toggleFavorite(radio)" class="ma-2" color="transparent">
-              <v-icon :color="radio.isFavorite ? 'red' : 'white'" size="24">mdi-heart</v-icon>
-            </v-btn>
-          </div>
+  <!-- Aggiunta del container per il pulsante -->
+  <div class="btn-container">
+    <!-- Cuore per aggiungere ai preferiti -->
+    <v-btn @click="toggleFavorite(radio)" class="ma-2" color="transparent">
+      <v-icon :color="radio.isFavorite ? 'red' : 'white'" size="24">mdi-heart</v-icon>
+    </v-btn>
+  </div>
 
-          <!-- Foto della radio -->
-          <v-row justify="center">
-            <v-col cols="12" class="text-center">
-              <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.png')" height="200" contain></v-img>
-            </v-col>
-          </v-row>
+  <!-- Foto della radio -->
+  <v-row justify="center">
+    <v-col cols="12" class="text-center">
+      <v-img :src="radio.favicon ? radio.favicon : require('@/assets/no immage.png')" height="200" contain></v-img>
+    </v-col>
+  </v-row>
 
-          <!-- Titolo della radio -->
-          <v-card-title class="text-center radio-title">{{ radio.name }}</v-card-title>
-          <v-card-actions class="d-flex justify-center">
-            <!-- Icona per riprodurre o mettere in pausa la radio -->
-            <v-btn @click="playRadio(radio)" color="transparent" class="ma-2">
-              <!-- Usa la condizione per visualizzare l'icona di play o pausa -->
-              <font-awesome-icon :icon="radio.isPlaying ? 'pause' : 'play'" />
-            </v-btn>
-            <!-- GIF di caricamento -->
-            <img v-if="isPlaying(radio)" src="@/assets/soundwave.gif" class="loading-gif" alt="Caricamento GIF">
-          </v-card-actions>
-        </v-card>
+  <!-- Titolo della radio -->
+  <v-card-title class="text-center radio-title">{{ radio.name }}</v-card-title>
+  <v-card-actions class="d-flex justify-center">
+    <!-- Icona per riprodurre o mettere in pausa la radio -->
+    <v-btn @click="playRadio(radio)" color="transparent" class="ma-2">
+  <v-avatar class="play-button-container" color="transparent" tile>
+    <!-- Usa la condizione per visualizzare l'icona di play o pausa -->
+    <font-awesome-icon :icon="radio.isPlaying ? 'pause' : 'play'" style="color: white;" />
+  </v-avatar>
+</v-btn>
+
+
+    <!-- GIF di caricamento -->
+    <img v-if="isPlaying(radio)" src="@/assets/soundwave.gif" class="loading-gif" alt="Caricamento GIF">
+  </v-card-actions>
+</v-card>
+
       </v-col>
     </v-row>
   </v-container>
@@ -39,9 +44,13 @@
 
 <script>
 // Importa Font Awesome
+import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
 import Hls from 'hls.js';
+
+// Aggiungi icone al core di Font Awesome
+library.add(faPlay, faPause);
 
 export default {
   name: 'RadioView',
@@ -163,4 +172,22 @@ export default {
   right: 5px; /* Aggiunge spazio a destra */
   z-index: 1; /* Imposta l'indice z */
 }
+.play-button-container {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s; /* Aggiunge una transizione per il cambio di colore */
+}
+
+.play-button-container:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Cambia il colore di sfondo al passaggio del mouse */
+}
+
+.play-button-container:active {
+  background-color: rgba(255, 255, 255, 0.4); /* Cambia il colore di sfondo quando premuto */
+}
+
 </style>

@@ -2,21 +2,21 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-// Importa Font Awesome
+// Import Font Awesome
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-// Importa Vuetify
+// Import Vuetify
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-// Aggiungi icone solide alla libreria Font Awesome
+// Add solid icons to Font Awesome library
 library.add(fas)
 
-// Configura Vuetify
+// Configure Vuetify
 const vuetify = createVuetify({
   components,
   directives,
@@ -24,8 +24,8 @@ const vuetify = createVuetify({
 
 const app = createApp(App)
 
-// Registra il componente Font Awesome globalmente
+// Register the Font Awesome component globally
 app.component('font-awesome-icon', FontAwesomeIcon)
 
-// Usa Vuetify e Router
+// Use Vuetify and Router
 app.use(router).use(vuetify).mount('#app')
